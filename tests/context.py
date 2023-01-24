@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 
-from ggpymanager import *
+from windrose import *
 
 
 @pytest.fixture(scope="session")
