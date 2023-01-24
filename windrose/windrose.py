@@ -12,9 +12,32 @@ def backward(x):
 
 
 class Windrose:
-    def __init__(self, r, theta, n_bins_r, n_bins_theta, fig, subplot_id=None):
+    def __init__(self, r, theta, n_bins_r, n_bins_theta, fig=None, subplot_id=None):
+        """
+        Creates a windrose plot.
+
+        Parameters
+        ----------
+        r : array-like
+            The velocity or scalar value.
+        theta : array-like
+            The angle for the scalar value in radians.
+        n_bins_r : int
+            The number of bins for the scalar value.
+        n_bins_theta : int
+            The number of bins for the angle.
+        fig : figure
+            The matplotlib figure in which the rose should be plotted.
+        subplot_id : int, optional
+            The id of the subplot in which the ax should be plotted, by default None
+        """
         # Init polar ax
-        ax = fig.add_subplot(subplot_id, projection="polar")
+        if fig is None:
+            fig = plt.figure()
+        if subplot_id is None:
+            ax = fig.add_subplot(projection="polar")
+        else:
+            ax = fig.add_subplot(subplot_id, projection="polar")
         func_scale = FuncScale(ax, (forward, backward))
         ax.set_yscale(func_scale)
         ax.set_theta_offset(np.pi/2)
