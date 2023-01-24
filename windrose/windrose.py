@@ -40,18 +40,20 @@ class Windrose:
             ax = fig.add_subplot(subplot_id, projection="polar")
         func_scale = FuncScale(ax, (forward, backward))
         ax.set_yscale(func_scale)
-        ax.set_theta_offset(np.pi/2)
+        ax.set_theta_offset(np.pi / 2)
         # ax.set_rlabel_position(180 - 22.5)
 
         theta_width = 2 * np.pi / n_bins_theta
-        theta_mid_points = (np.arange(n_bins_theta) + 0.5) / n_bins_theta * 2 * np.pi
+        theta_bins = np.arange(n_bins_theta + 1) * theta_width
+        # Map directions to range(0, 2 pi)
+        theta = theta % (2 * np.pi)
 
         values = np.zeros((n_bins_theta, n_bins_r))
 
-        for i, theta_mid_point in enumerate(theta_mid_points):
-            theta_min = theta_mid_point - theta_width / 2
-            theta_max = theta_mid_point + theta_width / 2
-            index = (theta % (2 * np.pi) >= theta_min) & (theta % (2 * np.pi) < theta_max)
+        for i, (theta_lower, theta_upper) in enumerate(
+            zip(theta_bins[:-1], theta_bins[1:])
+        ):
+            index = (theta >= theta_lower) & (theta < theta_upper)
             r_hist, r_bin_edges = np.histogram(
                 r[index], bins=n_bins_r, range=(r.min(), r.max())
             )
@@ -62,6 +64,7 @@ class Windrose:
 
         bottom = np.zeros(n_bins_theta)
         scaling_factor = 0.9
+        theta_mid_points = (np.arange(n_bins_theta) + 0.5) * theta_width
         for i in range(n_bins_r):
             color = plt.cm.viridis(np.repeat(i / n_bins_r, n_bins_theta))
             ax.bar(
@@ -70,7 +73,7 @@ class Windrose:
                 width=theta_width * scaling_factor,
                 bottom=bottom,
                 color=color,
-                label="{:.1f} to {:.1f}".format(r_bin_edges[i], r_bin_edges[i+1]),
+                label="{:.1f} to {:.1f}".format(r_bin_edges[i], r_bin_edges[i + 1]),
             )
             bottom += values[:, i]
 
@@ -80,4 +83,4 @@ class Windrose:
         # ax.set_yticklabels(["{}%".format(int(i)) for i in ticks])
 
         # Flexible formatter
-        ax.yaxis.set_major_formatter('{x}%')
+        ax.yaxis.set_major_formatter("{x}%")
