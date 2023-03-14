@@ -38,7 +38,7 @@ class Windrose:
             ax = fig.add_subplot(projection="polar")
         else:
             ax = fig.add_subplot(subplot_id, projection="polar")
-        func_scale = FuncScale(ax, (forward, backward))
+        func_scale = FuncScale(None, (forward, backward))
         ax.set_yscale(func_scale)
         ax.set_theta_offset(np.pi / 2)
         # ax.set_rlabel_position(180 - 22.5)
